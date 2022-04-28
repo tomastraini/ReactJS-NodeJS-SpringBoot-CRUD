@@ -21,7 +21,7 @@ let token;
 
 function getToken()
 {
-  const res = fetch("https://springbootangular11crud.herokuapp.com/api/authenticate", {
+  fetch("https://springbootangular11crud.herokuapp.com/api/authenticate", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
