@@ -2,16 +2,21 @@ import React, { Component } from 'react';
 import styles from './ABMClientes.module.scss';
 import { Button, Modal, Table } from 'react-bootstrap';
 
-export default class ABMClientes extends Component 
+export default class ABMClientes extends Component<any, {clientes: any, localidades: any,parentToChild: any, show: any, showModalModificar: any, selectedCliente: any, ModalBorrarClientes: any, selectedLocalidad: any}>
 {
-  clientes: any;
-  constructor (props) {
+  constructor(props) {
     super(props)
-    this.state = { clientes: null,
-    localidades: null
-   }
+    this.state = {
+      clientes: null,
+      localidades: null,
+      parentToChild: null,
+      show: null,
+      showModalModificar: null,
+      selectedCliente: null,
+      ModalBorrarClientes: null,
+      selectedLocalidad: null
+    }
   }
-  
 
   componentDidMount() {
     fetch('https://springbootangular11crud.herokuapp.com/api/Clientes', {
@@ -32,34 +37,32 @@ export default class ABMClientes extends Component
             'Authorization': 'Bearer ' + sessionStorage.getItem('token')
           }
         })
-        .then(response => response.json())
-        .then(data => {
-          this.setState({ localidades: data });
-          localStorage.setItem('localidades', JSON.stringify(data));
-        })
+          .then(response => response.json())
+          .then(data => {
+            this.setState({ localidades: data });
+            localStorage.setItem('localidades', JSON.stringify(data));
+          })
       }).catch((err) => {
-    }).finally(() => {
-    });
+      }).finally(() => {
+      });
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.parentToChild !== prevProps.parentToChild)
-    {
-      let clientesOld = this.props.parentToChild !== null && this.props.parentToChild !== undefined 
-      && this.props.parentToChild !== "" ?
-      JSON.parse(localStorage.getItem('clientes'))
-      .filter(cliente => cliente.razon_social.toLowerCase().includes(this.props.parentToChild.toLowerCase()) ||
-      cliente.localidad.toLowerCase().includes(this.props.parentToChild.toLowerCase()) ||
-      cliente.telefono.toLowerCase().includes(this.props.parentToChild.toString().toLowerCase()) ||
-      cliente.id_cliente.toString().includes(this.props.parentToChild.toString().toLowerCase())) :
-      JSON.parse(localStorage.getItem('clientes'));
-      
+    if (this.props.parentToChild !== prevProps.parentToChild) {
+      let clientesOld = this.props.parentToChild !== null && this.props.parentToChild !== undefined
+        && this.props.parentToChild !== "" ?
+        JSON.parse(localStorage.getItem('clientes'))
+          .filter(cliente => cliente.razon_social.toLowerCase().includes(this.props.parentToChild.toLowerCase()) ||
+            cliente.localidad.toLowerCase().includes(this.props.parentToChild.toLowerCase()) ||
+            cliente.telefono.toLowerCase().includes(this.props.parentToChild.toString().toLowerCase()) ||
+            cliente.id_cliente.toString().includes(this.props.parentToChild.toString().toLowerCase())) :
+        JSON.parse(localStorage.getItem('clientes'));
+
       this.setState({ clientes: clientesOld });
     }
   }
 
-  handleSubmit(cliente): void
-  {
+  handleSubmit(cliente): void {
     fetch('https://springbootangular11crud.herokuapp.com/api/Clientes', {
       method: 'POST',
       headers: {
@@ -74,13 +77,12 @@ export default class ABMClientes extends Component
         this.setState({ show: false });
       }
       ).catch((err) => {
-    }
-    ).finally(() => {
-    });
+      }
+      ).finally(() => {
+      });
   }
 
-  handleModify(cliente): void
-  {
+  handleModify(cliente): void {
     fetch('https://springbootangular11crud.herokuapp.com/api/Clientes/', {
       method: 'PUT',
       headers: {
@@ -94,13 +96,12 @@ export default class ABMClientes extends Component
         this.setState({ showModalModificar: false });
       }
       ).catch((err) => {
-    }
-    ).finally(() => {
-    });
+      }
+      ).finally(() => {
+      });
   }
 
-  handleDelete(id): void
-  {
+  handleDelete(id): void {
     fetch('https://springbootangular11crud.herokuapp.com/api/Clientes/' + id.id_cliente, {
       method: 'DELETE',
       headers: {
@@ -118,275 +119,279 @@ export default class ABMClientes extends Component
       });
   }
 
-  render()
-  {
+  render() {
     if (this.state.clientes === null || this.state.localidades === null) {
       return <div>Loading...</div>;
-    }else
-    {
+    } else {
       return (
         <div className={styles.MyComponent}>
-        <div className={styles.pageTitle + " shadow bg-light border"}>
-          <h1> ABM de Clientes  </h1>
-        </div>
-        <div className='shadow'>
-        <ModalCargarClientes localidades={this.state.localidades} show={this.state.show} onHide={() => this.setState({ show: false })}
-        handleShow = {() => this.setState({ show: true })} onClick = {() => this.setState({ show: false })}
-        onsubmit = {(cliente) => this.handleSubmit(cliente)}/>
+          <div className={styles.pageTitle + " shadow bg-light border"}>
+            <h1> ABM de Clientes  </h1>
+          </div>
+          <div className='shadow'>
+            <ModalCargarClientes localidades={this.state.localidades} show={this.state.show} onHide={() => this.setState({ show: false })}
+              handleShow={() => this.setState({ show: true })} onClick={() => this.setState({ show: false })}
+              onsubmit={(cliente) => this.handleSubmit(cliente)} />
 
-        {this.state.showModalModificar ?
-        <ModalModifyClientes 
-                      showModalModificar={this.state.showModalModificar} 
+            {this.state.showModalModificar ?
+              <ModalModifyClientes
+                showModalModificar={this.state.showModalModificar}
 
-                      onHide={() => this.setState({ showModalModificar: false })}
+                onHide={() => this.setState({ showModalModificar: false })}
 
-                      handleShowModificar = {() => this.setState({ showModalModificar: true })}
-                        
-                      onClick = {() => this.setState({ showModalModificar: false } )}
-                      
-                      cliente={this.state.selectedCliente}
+                handleShowModificar={() => this.setState({ showModalModificar: true })}
 
-                      localidades={this.state.localidades}
+                onClick={() => this.setState({ showModalModificar: false })}
 
-                      seletedLocalidad={this.state.selectedLocalidad}
+                cliente={this.state.selectedCliente}
 
-                      onsubmit = {(cliente) => this.handleModify(cliente)}
-        />
-        : ''
-        }
-        {
-          this.state.ModalBorrarClientes ?
-          <ModalBorrarClientes
+                localidades={this.state.localidades}
 
-          showModalBorrar={this.state.ModalBorrarClientes}
-          onHide={() => this.setState({ ModalBorrarClientes: false })}
-          handleShowBorrarClientes={() => this.setState({ ModalBorrarClientes: true })}
-          onClick={() => this.setState({ ModalBorrarClientes: false })}
-          cliente={this.state.selectedCliente}
-          onsubmit={(cliente) => this.handleDelete(cliente)}
-          />
-        
-        : ''
-        }
+                seletedLocalidad={this.state.selectedLocalidad}
 
-        <Table striped bordered hover className={styles.tableComponentStyle}>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Teléfono</th>
-            <th>Localidad</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-              this.state.clientes.map(cliente => (
-              <tr key={cliente.id_cliente}>
-                <td>{cliente.id_cliente}</td>
-                <td>{cliente.razon_social}</td>
-                <td>{cliente.telefono}</td>
-                <td>{cliente.localidad}</td>
-                <td>
-                  <Button variant="primary" onClick={() => this.setState({ showModalModificar: true, selectedCliente: cliente,
-                  selectedLocalidad: cliente.localidad })}>
-                    Modificar
-                  </Button>
-
-                  <Button variant="danger" onClick={() => this.setState({ ModalBorrarClientes: true, selectedCliente: cliente })}
-                  className={styles.eliminarBtn}>
-                    Borrar
-                  </Button>
-                </td>
-              </tr>
-            ))
+                onsubmit={(cliente) => this.handleModify(cliente)}/>
+              : ''
             }
-        </tbody>
-      </Table>
-      </div>
-        
-      </div>
+            {
+              this.state.ModalBorrarClientes ?
+                <ModalBorrarClientes
+
+                  showModalBorrar={this.state.ModalBorrarClientes}
+                  onHide={() => this.setState({ ModalBorrarClientes: false })}
+                  handleShowBorrarClientes={() => this.setState({ ModalBorrarClientes: true })}
+                  onClick={() => this.setState({ ModalBorrarClientes: false })}
+                  cliente={this.state.selectedCliente}
+                  onsubmit={(cliente) => this.handleDelete(cliente)}/>
+                : ''
+            }
+
+            <Table striped bordered hover className={styles.tableComponentStyle}>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nombre</th>
+                  <th>Teléfono</th>
+                  <th>Localidad</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  this.state.clientes.map(cliente => (
+                    <tr key={cliente.id_cliente}>
+                      <td>{cliente.id_cliente}</td>
+                      <td>{cliente.razon_social}</td>
+                      <td>{cliente.telefono}</td>
+                      <td>{cliente.localidad}</td>
+                      <td>
+                        <Button variant="primary" onClick={() => this.setState({
+                          showModalModificar: true, selectedCliente: cliente,
+                          selectedLocalidad: cliente.localidad
+                        })}>
+                          Modificar
+                        </Button>
+
+                        <Button variant="danger" onClick={() => this.setState({ ModalBorrarClientes: true, selectedCliente: cliente })}
+                          className={styles.eliminarBtn}>
+                          Borrar
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </Table>
+          </div>
+
+        </div>
       );
     }
-    
   }
-
 }
 
-
-class ModalCargarClientes extends Component {
-  constructor (props) {
+class ModalCargarClientes extends Component<any, { clientes: null, localidades: null }>
+{
+  constructor(props) {
     super(props)
-    this.state = { clientes: null,
-    localidades: null
-   }
-  }
-
-  selectedLocalidad: any;
-  
-  render() {
-      return (
-          <>
-             <Button variant="primary" onClick={this.props.handleShow} className={styles.cargarClientesBtn}>
-              Cargar cliente
-            </Button>
-              <Modal show={this.props.show} onHide={this.props.handleClose} >
-
-                  <Modal.Header>
-                      <Modal.Title>
-                          Cargar clientes
-                      </Modal.Title>
-                  </Modal.Header>
-
-                  <Modal.Body>
-                      <form>
-                          <div className="form-group mt-2 mb-2">
-                              <label>Nombre</label>
-                              <input type="text" className="form-control" placeholder="Nombre" name='nombredecliente' id='nombredecliente'/>
-                          </div>
-                          <div className="form-group mt-2 mb-2">
-                              <label>Teléfono</label>
-                              <input type="text" className="form-control" placeholder="Teléfono" name='telefonodecliente' id='telefonodecliente'/>
-                          </div>
-                          <div className="form-group mt-2 mb-2">
-                              <label>Localidad</label>
-                              <select className="form-control" 
-                              name='localidaddecliente' id='localidaddecliente' onChange={(e) => this.selectedLocalidad = e.target.value} defaultValue="seleccione">
-                                <option value="seleccione" disabled>Seleccione una localidad</option>
-                                  {
-                                      this.props.localidades.map(localidad => (
-                                          <option key={localidad.cp} value={localidad.cp}>{localidad.localidad}</option>
-                                      ))
-                                  }
-                              </select>
-                          </div>
-                      </form>
-
-                  </Modal.Body>
-
-                  <Modal.Footer>
-                      <Button variant="secondary" onClick={() => this.props.onClick({  })} >Cancelar</Button>
-                      <Button variant="primary" onClick={() =>  this.props.onsubmit({
-                          razon_social: document.getElementById('nombredecliente').value,
-                          telefono: document.getElementById('telefonodecliente').value,
-                          cp: this.selectedLocalidad
-                      })}>
-                          Cargar
-                      </Button>
-                  </Modal.Footer>
-              </Modal>
-          </>
-      )
-  };
-
-
-}
-
-class ModalModifyClientes extends Component {
-  constructor (props) {
-    super(props)
-    this.state = { clientes: null,
+    this.state = {
+      clientes: null,
       localidades: null
-     }
+    }
+  }
+  selectedNombre: any;
+  selectedTelefono: any;
+  selectedLocalidad: any;
+
+  render() {
+    return (
+      <>
+        <Button variant="primary" onClick={this.props.handleShow} className={styles.cargarClientesBtn}>
+          Cargar cliente
+        </Button>
+        <Modal show={this.props.show} onHide={this.props.handleClose} >
+
+          <Modal.Header>
+            <Modal.Title>
+              Cargar clientes
+            </Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            <form>
+              <div className="form-group mt-2 mb-2">
+                <label>Nombre</label>
+                <input type="text" className="form-control" placeholder="Nombre" name='nombredecliente' id='nombredecliente'
+                  onChange={(e) => this.selectedNombre = e.target.value} />
+              </div>
+              <div className="form-group mt-2 mb-2">
+                <label>Teléfono</label>
+                <input type="text" className="form-control" placeholder="Teléfono" name='telefonodecliente' id='telefonodecliente'
+                  onChange={(e) => this.selectedTelefono = e.target.value} />
+              </div>
+              <div className="form-group mt-2 mb-2">
+                <label>Localidad</label>
+                <select className="form-control"
+                  name='localidaddecliente' id='localidaddecliente' onChange={(e) => this.selectedLocalidad = e.target.value} defaultValue="seleccione">
+                  <option value="seleccione" disabled>Seleccione una localidad</option>
+                  {
+                    this.props.localidades.map(localidad => (
+                      <option key={localidad.cp} value={localidad.cp}>{localidad.localidad}</option>
+                    ))
+                  }
+                </select>
+              </div>
+            </form>
+
+          </Modal.Body>
+
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => this.props.onClick({})} >Cancelar</Button>
+            <Button variant="primary" onClick={() =>
+            this.props.onsubmit({
+              razon_social: this.selectedNombre,
+              telefono: this.selectedTelefono,
+              cp: this.selectedLocalidad
+            })}>
+              Cargar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    )
+  };
+}
+
+class ModalModifyClientes extends Component<any, { cliente: null, localidades: null, handleCloseModificar: null, showModalModificar: null }>
+{
+  constructor(props) {
+    super(props)
+    this.state = {
+      cliente: null,
+      localidades: null,
+      handleCloseModificar: null,
+      showModalModificar: null
+    }
   }
 
   selectedLocalidad: any = this.props.cliente.cp !== null && this.props.cliente.cp !== undefined
-  ? this.props.cliente.cp : '';
+    ? this.props.cliente.cp : '';
+
   nombredecliente: any = this.props.cliente.razon_social !== null && this.props.cliente.razon_social !== undefined
-  ? this.props.cliente.razon_social : '';
+    ? this.props.cliente.razon_social : '';
+
   telefonodecliente: any = this.props.cliente.telefono !== null && this.props.cliente.telefono !== undefined
-  ? this.props.cliente.telefono : '';
-  
+    ? this.props.cliente.telefono : '';
+
   render() {
-      return (
-          <>
-              <Modal show={this.props.showModalModificar} onHide={this.props.handleCloseModificar} >
+    return (
+      <>
+        <Modal show={this.props.showModalModificar} onHide={this.props.handleCloseModificar} >
+          <Modal.Header>
+            <Modal.Title>
+              Modificar clientes
+            </Modal.Title>
+          </Modal.Header>
 
-                  <Modal.Header>
-                      <Modal.Title>
-                          Modificar clientes
-                      </Modal.Title>
-                  </Modal.Header>
+          <Modal.Body>
+            <form>
+              <div className="form-group mt-2 mb-2">
+                <label>Nombre</label>
+                <input type="text" className="form-control" placeholder="Nombre" name='nombredecliente' id='nombredecliente'
+                  defaultValue={this.props.cliente.razon_social} onChange={(e) => this.nombredecliente = e.target.value} />
+              </div>
+              <div className="form-group mt-2 mb-2">
+                <label>Teléfono</label>
+                <input type="text" className="form-control" placeholder="Teléfono" name='telefonodecliente' id='telefonodecliente'
+                  defaultValue={this.props.cliente.telefono} onChange={(e) => this.telefonodecliente = e.target.value} />
+              </div>
+              <div className="form-group mt-2 mb-2">
+                <label>Localidad</label>
+                <select className="form-control"
+                  name='localidaddecliente' id='localidaddecliente' onChange={(e) => this.selectedLocalidad = e.target.value} defaultValue={this.props.cliente.cp}>
+                  <option value="seleccione" disabled>Seleccione una localidad</option
+                  >
+                  {
+                    this.props.localidades.map(localidad => (
+                      <option key={localidad.cp} value={localidad.cp}>{localidad.localidad}</option>
+                    ))
+                  }
+                </select>
+              </div>
+            </form>
 
-                  <Modal.Body>
-                      <form>
-                          <div className="form-group mt-2 mb-2">
-                              <label>Nombre</label>
-                              <input type="text" className="form-control" placeholder="Nombre" name='nombredecliente' id='nombredecliente' 
-                              defaultValue={this.props.cliente.razon_social} onChange={(e) => this.nombredecliente = e.target.value}/>
-                          </div>
-                          <div className="form-group mt-2 mb-2">
-                              <label>Teléfono</label>
-                              <input type="text" className="form-control" placeholder="Teléfono" name='telefonodecliente' id='telefonodecliente' 
-                              defaultValue={this.props.cliente.telefono} onChange={(e) => this.telefonodecliente = e.target.value}/>
-                          </div>
-                          <div className="form-group mt-2 mb-2">
-                              <label>Localidad</label>
-                              <select className="form-control" 
-                              name='localidaddecliente' id='localidaddecliente' onChange={(e) => this.selectedLocalidad = e.target.value} defaultValue={this.props.cliente.cp}>
-                                <option value="seleccione" disabled>Seleccione una localidad</option
-                                >
-                                  {
-                                      this.props.localidades.map(localidad => (
-                                          <option key={localidad.cp} value={localidad.cp}>{localidad.localidad}</option>
-                                      ))
-                                  }
-                              </select>
-                          </div>
-                      </form>
+          </Modal.Body>
 
-                  </Modal.Body>
-
-                  <Modal.Footer>
-                      <Button variant="secondary" onClick={() => this.props.onClick({  })} >Cancelar</Button>
-                      <Button variant="primary" onClick={() =>  this.props.onsubmit({
-                          id_cliente: this.props.cliente.id_cliente,
-                          razon_social: this.nombredecliente,
-                          telefono: this.telefonodecliente,
-                          cp: this.selectedLocalidad
-                      })}>
-                          Modificar
-                      </Button>
-                  </Modal.Footer>
-              </Modal>
-          </>
-      )
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => this.props.onClick({})} >Cancelar</Button>
+            <Button variant="primary" onClick={() => this.props.onsubmit({
+              id_cliente: this.props.cliente.id_cliente,
+              razon_social: this.nombredecliente,
+              telefono: this.telefonodecliente,
+              cp: this.selectedLocalidad
+            })}>
+              Modificar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    )
   };
 }
- 
 
-class ModalBorrarClientes extends Component {
-  constructor (props) {
+
+class ModalBorrarClientes extends Component<any, { cliente: any }>
+{
+  constructor(props) {
     super(props)
-    this.state = { clientes: null,
-      localidades: null
-     }
+    this.state = {
+      cliente: null,
+    }
   }
 
   render() {
-      return (
-          <>
-              <Modal show={this.props.showModalBorrar} onHide={this.props.handleCloseBorrar} >
+    return (
+      <>
+        <Modal show={this.props.showModalBorrar} onHide={this.props.handleCloseBorrar} >
 
-                  <Modal.Header>
-                      <Modal.Title>
-                          Borrar clientes
-                      </Modal.Title>
-                  </Modal.Header>
+          <Modal.Header>
+            <Modal.Title>
+              Borrar clientes
+            </Modal.Title>
+          </Modal.Header>
 
-                  <Modal.Body>
-                      <h3>Seguro que quiere borrar el cliente?</h3>
-                  </Modal.Body>
-                  <Modal.Footer>
-                      <Button variant="secondary" onClick={() => this.props.onClick({  })} >Cancelar</Button>
-                      <Button variant="danger" onClick={() =>  this.props.onsubmit({
-                          id_cliente: this.props.cliente.id_cliente
-                      })}>
-                          Borrar
-                      </Button>
-                  </Modal.Footer>
-              </Modal>
-          </>
-      )
+          <Modal.Body>
+            <h3>Seguro que quiere borrar el cliente?</h3>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => this.props.onClick({})} >Cancelar</Button>
+            <Button variant="danger" onClick={() => this.props.onsubmit({
+              id_cliente: this.props.cliente.id_cliente
+            })}>
+              Borrar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    )
   };
 }
