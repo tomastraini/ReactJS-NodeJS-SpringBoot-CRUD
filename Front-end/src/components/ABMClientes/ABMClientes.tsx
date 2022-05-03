@@ -18,8 +18,10 @@ export default class ABMClientes extends Component<any, {clientes: any, localida
     }
   }
 
+  apiURL = this.props.apiURL;
+
   componentDidMount() {
-    fetch('https://springbootangular11crud.herokuapp.com/api/Clientes', {
+    fetch(this.apiURL + 'Clientes', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -30,7 +32,7 @@ export default class ABMClientes extends Component<any, {clientes: any, localida
         this.setState({ clientes: data });
         localStorage.setItem('clientes', JSON.stringify(data));
 
-        fetch('https://springbootangular11crud.herokuapp.com/api/Localidades', {
+        fetch(this.apiURL + 'Localidades', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -63,7 +65,7 @@ export default class ABMClientes extends Component<any, {clientes: any, localida
   }
 
   handleSubmit(cliente): void {
-    fetch('https://springbootangular11crud.herokuapp.com/api/Clientes', {
+    fetch(this.apiURL + 'Clientes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -83,7 +85,7 @@ export default class ABMClientes extends Component<any, {clientes: any, localida
   }
 
   handleModify(cliente): void {
-    fetch('https://springbootangular11crud.herokuapp.com/api/Clientes/', {
+    fetch(this.apiURL + 'Clientes/', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -102,7 +104,7 @@ export default class ABMClientes extends Component<any, {clientes: any, localida
   }
 
   handleDelete(id): void {
-    fetch('https://springbootangular11crud.herokuapp.com/api/Clientes/' + id.id_cliente, {
+    fetch(this.apiURL + 'Clientes/' + id.id_cliente, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -121,17 +123,26 @@ export default class ABMClientes extends Component<any, {clientes: any, localida
 
   render() {
     if (this.state.clientes === null || this.state.localidades === null) {
-      return <div>Loading...</div>;
+      return (
+        <div className={styles.MyComponentLoading + ' bg-dark'}>
+          <div className="d-flex justify-content-center loadingIcon mt-5">
+            <div className="spinner-border text-danger" role="status">
+              <span className="sr-only">Cargando...</span>
+            </div>
+          </div>
+        </div>
+      );
     } else {
       return (
-        <div className={styles.MyComponent}>
-          <div className={styles.pageTitle + " shadow bg-light border"}>
-            <h1> ABM de Clientes  </h1>
+        <div className={this.state.clientes.length >= 8 ? styles.MyComponent : styles.MyComponentEmpty}>
+          <div className={styles.pageTitle + " shadow bg-dark border"}>
+            <h1 className='text-light'> ABM de Clientes  </h1>
           </div>
-          <div className='shadow'>
+          <div className='shadow bg-dark '>
             <ModalCargarClientes localidades={this.state.localidades} show={this.state.show} onHide={() => this.setState({ show: false })}
               handleShow={() => this.setState({ show: true })} onClick={() => this.setState({ show: false })}
-              onsubmit={(cliente) => this.handleSubmit(cliente)} />
+              onsubmit={(cliente) => this.handleSubmit(cliente)} 
+              />
 
             {this.state.showModalModificar ?
               <ModalModifyClientes
@@ -167,22 +178,22 @@ export default class ABMClientes extends Component<any, {clientes: any, localida
 
             <Table striped bordered hover className={styles.tableComponentStyle}>
               <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Nombre</th>
-                  <th>Teléfono</th>
-                  <th>Localidad</th>
-                  <th>Acciones</th>
+                <tr >
+                  <th className='text-white'>#</th>
+                  <th className='text-white'>Nombre</th>
+                  <th className='text-white'>Teléfono</th>
+                  <th className='text-white'>Localidad</th>
+                  <th className='text-white'>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {
                   this.state.clientes.map(cliente => (
                     <tr key={cliente.id_cliente}>
-                      <td>{cliente.id_cliente}</td>
-                      <td>{cliente.razon_social}</td>
-                      <td>{cliente.telefono}</td>
-                      <td>{cliente.localidad}</td>
+                      <td className='text-white'>{cliente.id_cliente}</td>
+                      <td className='text-white'>{cliente.razon_social}</td>
+                      <td className='text-white'>{cliente.telefono}</td>
+                      <td className='text-white'>{cliente.localidad}</td>
                       <td>
                         <Button variant="primary" onClick={() => this.setState({
                           showModalModificar: true, selectedCliente: cliente,
@@ -202,6 +213,7 @@ export default class ABMClientes extends Component<any, {clientes: any, localida
               </tbody>
             </Table>
           </div>
+          
 
         </div>
       );
@@ -225,31 +237,33 @@ class ModalCargarClientes extends Component<any, { clientes: null, localidades: 
   render() {
     return (
       <>
+
         <Button variant="primary" onClick={this.props.handleShow} className={styles.cargarClientesBtn}>
           Cargar cliente
         </Button>
-        <Modal show={this.props.show} onHide={this.props.handleClose} >
 
-          <Modal.Header>
-            <Modal.Title>
+        <Modal show={this.props.show} onHide={this.props.handleClose} backdrop={true} >
+
+          <Modal.Header  className='bg-dark'>
+            <Modal.Title  className='text-white'>
               Cargar clientes
             </Modal.Title>
           </Modal.Header>
 
-          <Modal.Body>
+          <Modal.Body  className='bg-dark'>
             <form>
               <div className="form-group mt-2 mb-2">
-                <label>Nombre</label>
+                <label className='text-white'>Nombre</label>
                 <input type="text" className="form-control" placeholder="Nombre" name='nombredecliente' id='nombredecliente'
                   onChange={(e) => this.selectedNombre = e.target.value} />
               </div>
               <div className="form-group mt-2 mb-2">
-                <label>Teléfono</label>
+                <label className='text-white'>Teléfono</label>
                 <input type="text" className="form-control" placeholder="Teléfono" name='telefonodecliente' id='telefonodecliente'
                   onChange={(e) => this.selectedTelefono = e.target.value} />
               </div>
               <div className="form-group mt-2 mb-2">
-                <label>Localidad</label>
+                <label className='text-white'>Localidad</label>
                 <select className="form-control"
                   name='localidaddecliente' id='localidaddecliente' onChange={(e) => this.selectedLocalidad = e.target.value} defaultValue="seleccione">
                   <option value="seleccione" disabled>Seleccione una localidad</option>
@@ -264,7 +278,7 @@ class ModalCargarClientes extends Component<any, { clientes: null, localidades: 
 
           </Modal.Body>
 
-          <Modal.Footer>
+          <Modal.Footer className='bg-dark'>
             <Button variant="secondary" onClick={() => this.props.onClick({})} >Cancelar</Button>
             <Button variant="primary" onClick={() =>
             this.props.onsubmit({
@@ -280,6 +294,8 @@ class ModalCargarClientes extends Component<any, { clientes: null, localidades: 
     )
   };
 }
+
+
 
 class ModalModifyClientes extends Component<any, { cliente: null, localidades: null, handleCloseModificar: null, showModalModificar: null }>
 {
@@ -306,26 +322,26 @@ class ModalModifyClientes extends Component<any, { cliente: null, localidades: n
     return (
       <>
         <Modal show={this.props.showModalModificar} onHide={this.props.handleCloseModificar} >
-          <Modal.Header>
-            <Modal.Title>
+          <Modal.Header className='bg-dark'>
+            <Modal.Title className='text-white'>
               Modificar clientes
             </Modal.Title>
           </Modal.Header>
 
-          <Modal.Body>
+          <Modal.Body className='bg-dark'>
             <form>
               <div className="form-group mt-2 mb-2">
-                <label>Nombre</label>
+                <label className='text-white'>Nombre</label>
                 <input type="text" className="form-control" placeholder="Nombre" name='nombredecliente' id='nombredecliente'
                   defaultValue={this.props.cliente.razon_social} onChange={(e) => this.nombredecliente = e.target.value} />
               </div>
               <div className="form-group mt-2 mb-2">
-                <label>Teléfono</label>
+                <label className='text-white'>Teléfono</label>
                 <input type="text" className="form-control" placeholder="Teléfono" name='telefonodecliente' id='telefonodecliente'
                   defaultValue={this.props.cliente.telefono} onChange={(e) => this.telefonodecliente = e.target.value} />
               </div>
               <div className="form-group mt-2 mb-2">
-                <label>Localidad</label>
+                <label className='text-white'>Localidad</label>
                 <select className="form-control"
                   name='localidaddecliente' id='localidaddecliente' onChange={(e) => this.selectedLocalidad = e.target.value} defaultValue={this.props.cliente.cp}>
                   <option value="seleccione" disabled>Seleccione una localidad</option
@@ -341,7 +357,7 @@ class ModalModifyClientes extends Component<any, { cliente: null, localidades: n
 
           </Modal.Body>
 
-          <Modal.Footer>
+          <Modal.Footer className='bg-dark'>
             <Button variant="secondary" onClick={() => this.props.onClick({})} >Cancelar</Button>
             <Button variant="primary" onClick={() => this.props.onsubmit({
               id_cliente: this.props.cliente.id_cliente,
@@ -373,16 +389,16 @@ class ModalBorrarClientes extends Component<any, { cliente: any }>
       <>
         <Modal show={this.props.showModalBorrar} onHide={this.props.handleCloseBorrar} >
 
-          <Modal.Header>
-            <Modal.Title>
+          <Modal.Header className='bg-dark'>
+            <Modal.Title className='text-white'>
               Borrar clientes
             </Modal.Title>
           </Modal.Header>
 
-          <Modal.Body>
-            <h3>Seguro que quiere borrar el cliente?</h3>
+          <Modal.Body className='bg-dark'>
+            <h3 className='text-white'>Seguro que quiere borrar el cliente?</h3>
           </Modal.Body>
-          <Modal.Footer>
+          <Modal.Footer className='bg-dark'>
             <Button variant="secondary" onClick={() => this.props.onClick({})} >Cancelar</Button>
             <Button variant="danger" onClick={() => this.props.onsubmit({
               id_cliente: this.props.cliente.id_cliente

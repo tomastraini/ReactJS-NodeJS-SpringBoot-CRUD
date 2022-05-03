@@ -25,6 +25,23 @@
   color: white;
 }
 
+.navbar-light .navbar-nav .nav-link {
+  color: white !important;
+}
+
+.navbar-expand-lg .navbar-nav .dropdown-menu {
+  position: absolute;
+  background-color: #282c34;
+}
+
+.dropdown-item {
+  color: white !important;
+}
+
+.dropdown-item:hover {
+  background-color: #3e4147 !important;
+}
+
 .App-link {
   color: #61dafb;
 }
@@ -36,4 +53,31 @@
   to {
     transform: rotate(360deg);
   }
+}
+.separator::before,
+.separator::after
+{
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgb(255, 255, 255);
+}
+
+.separator:not(:empty)::before {
+  margin-right: .25em;
+}
+
+.separator:not(:empty)::after {
+  margin-left: .25em;
+}
+
+.pageTitle
+{
+    text-decoration: underline;
+    margin-bottom: 1%;
+    border-radius: 10px;
+}
+
+.footer
+{
+  border-top: white solid 1px;
 }

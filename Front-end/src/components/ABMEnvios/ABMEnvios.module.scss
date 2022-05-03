@@ -1,17 +1,25 @@
-.MyComponent {
+.ABMEnvios
+{
     padding-bottom: 10% !important;
 }
 
-.MyComponentLoading
+.ABMEnviosEmpty
 {
     padding-bottom: 50% !important;
 }
 
-.MyComponentEmpty
+.MyComponentLoading
 {
-    margin-bottom: 40% !important;
-
+    padding-bottom: 100% !important;
 }
+
+.pageTitle
+{
+    text-decoration: underline;
+    margin-bottom: 1%;
+    border-radius: 10px;
+}
+
 
 .loadingIcon
 {
@@ -44,12 +52,7 @@
     }
 }
 
-.pageTitle
-{
-    text-decoration: underline;
-    margin-bottom: 1%;
-    border-radius: 10px;
-}
+
 
 .td
 {
