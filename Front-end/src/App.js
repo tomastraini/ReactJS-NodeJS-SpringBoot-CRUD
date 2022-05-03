@@ -16,7 +16,8 @@ import {
 import Menu from './components/Menu/Menu.tsx';
 import ABMClientes from './components/ABMClientes/ABMClientes.tsx';
 import ABMEnvios from './components/ABMEnvios/ABMEnvios.tsx';
-
+import AboutUs from './components/AboutUs/AboutUs.tsx';
+import Login from './components/Login/Login.tsx';
 
 let token;
 
@@ -77,11 +78,33 @@ function App() {
                 <NavDropdown.Item href='clientes'>ABM de clientes</NavDropdown.Item>
                 <NavDropdown.Item href='envios'>ABM de envios</NavDropdown.Item>
               </NavDropdown>
-              <Nav.Link>
+              <Nav.Link href='/aboutus'>
                 Sobre nosotros
               </Nav.Link>
+
+              
+
             </Nav>
+            {
+              sessionStorage.getItem('SSID') === null || sessionStorage.getItem('SSID') === undefined ||
+              sessionStorage.getItem('m') === null || sessionStorage.getItem('m') === undefined ||
+              sessionStorage.getItem('y') === null || sessionStorage.getItem('y') === undefined ?
+              <Button variant="danger" href='/login' className='login-button'>
+              Cambiar de cuenta
+              </Button>
+              :
+              <Button variant="danger" className='login-button' onClick={() => {
+                sessionStorage.clear();
+                window.location.reload();
+              }
+              }>
+                Cerrar sesión
+              </Button>
+            }
+
+
             <Form className="d-flex">
+              
               <FormControl
                 type="search"
                 placeholder="Search"
@@ -92,6 +115,7 @@ function App() {
               />
               <Button variant="outline-danger">Search</Button>
             </Form>
+            
           </Navbar.Collapse>
         </Container>
       </Navbar>
@@ -100,6 +124,8 @@ function App() {
             <Route path="/" element={<Menu apiURL={apiURL} />} />
             <Route path="/clientes" element={<ABMClientes parentToChild={data} apiURL={apiURL} />} />
             <Route path="/envios" element={<ABMEnvios parentToChild={data} apiURLEnvios={apiURLEnvios} apiURL={apiURL} />} />
+            <Route path="/login" element={<Login apiURL={apiURL} />} />
+            <Route path="/aboutus" element={<AboutUs />} />
           </Routes>
         </BrowserRouter>
         <footer className="bg-dark footer">
